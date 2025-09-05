@@ -10,13 +10,15 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
   const [sortBy, setSortBy] = useState("dueDate");
 
   const getCourseName = (courseId) => {
-    const course = courses.find(c => c.Id.toString() === courseId.toString());
-    return course ? `${course.code} - ${course.name}` : "Unknown Course";
+const actualCourseId = courseId?.Id || courseId;
+    const course = courses.find(c => c.Id.toString() === actualCourseId.toString());
+    return course ? `${course.code_c} - ${course.Name}` : "Unknown Course";
   };
 
-  const getCourseColor = (courseId) => {
-    const course = courses.find(c => c.Id.toString() === courseId.toString());
-    return course?.color || "#6B7280";
+const getCourseColor = (courseId) => {
+    const actualCourseId = courseId?.Id || courseId;
+    const course = courses.find(c => c.Id.toString() === actualCourseId.toString());
+    return course?.color_c || "#6B7280";
   };
 
   const getDueDateLabel = (dueDate) => {
@@ -38,11 +40,11 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
   const filteredAssignments = assignments.filter(assignment => {
     switch (filter) {
       case "todo":
-        return assignment.status === "todo";
+return assignment.status_c === "todo";
       case "completed":
-        return assignment.status === "completed";
+        return assignment.status_c === "completed";
       case "overdue":
-        return assignment.status === "todo" && isPast(new Date(assignment.dueDate));
+        return assignment.status_c === "todo" && isPast(new Date(assignment.due_date_c));
       default:
         return true;
     }
@@ -50,23 +52,23 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
 
   const sortedAssignments = [...filteredAssignments].sort((a, b) => {
     switch (sortBy) {
-      case "dueDate":
-        return new Date(a.dueDate) - new Date(b.dueDate);
+case "dueDate":
+        return new Date(a.due_date_c) - new Date(b.due_date_c);
       case "priority":
         const priorityOrder = { high: 3, medium: 2, low: 1 };
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
+        return priorityOrder[b.priority_c] - priorityOrder[a.priority_c];
       case "course":
-        return getCourseName(a.courseId).localeCompare(getCourseName(b.courseId));
+        return getCourseName(a.course_id_c).localeCompare(getCourseName(b.course_id_c));
       default:
         return 0;
     }
   });
 
-  const filterOptions = [
+const filterOptions = [
     { value: "all", label: "All", count: assignments.length },
-    { value: "todo", label: "To Do", count: assignments.filter(a => a.status === "todo").length },
-    { value: "completed", label: "Completed", count: assignments.filter(a => a.status === "completed").length },
-    { value: "overdue", label: "Overdue", count: assignments.filter(a => a.status === "todo" && isPast(new Date(a.dueDate))).length }
+    { value: "todo", label: "To Do", count: assignments.filter(a => a.status_c === "todo").length },
+    { value: "completed", label: "Completed", count: assignments.filter(a => a.status_c === "completed").length },
+    { value: "overdue", label: "Overdue", count: assignments.filter(a => a.status_c === "todo" && isPast(new Date(a.due_date_c))).length }
   ];
 
   return (
@@ -108,12 +110,12 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
               <button
                 onClick={() => onToggleComplete?.(assignment.Id)}
                 className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                  assignment.status === "completed"
+assignment.status_c === "completed"
                     ? "bg-green-500 border-green-500 text-white"
                     : "border-gray-300 hover:border-primary-500"
                 }`}
               >
-                {assignment.status === "completed" && (
+{assignment.status_c === "completed" && (
                   <ApperIcon name="Check" className="w-3 h-3" />
                 )}
               </button>
@@ -121,33 +123,32 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className={`font-medium ${
-                      assignment.status === "completed" 
+<h3 className={`font-medium ${
+                      assignment.status_c === "completed" 
                         ? "text-gray-500 line-through" 
                         : "text-gray-900"
                     }`}>
-                      {assignment.title}
+                      {assignment.title_c}
                     </h3>
                     
                     <div className="flex items-center space-x-4 mt-1">
                       <div className="flex items-center space-x-2">
                         <div 
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: getCourseColor(assignment.courseId) }}
+className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: getCourseColor(assignment.course_id_c) }}
                         />
                         <span className="text-sm text-gray-600">
-                          {getCourseName(assignment.courseId)}
+                          {getCourseName(assignment.course_id_c)}
                         </span>
                       </div>
                       
                       <Badge 
-                        size="sm" 
-                        className={getDueDateColor(assignment.dueDate)}
+size="sm" 
+                        className={getDueDateColor(assignment.due_date_c)}
                       >
-                        {getDueDateLabel(assignment.dueDate)}
+                        {getDueDateLabel(assignment.due_date_c)}
                       </Badge>
-                      
-                      <PriorityBadge priority={assignment.priority} showIcon={false} />
+<PriorityBadge priority={assignment.priority_c} showIcon={false} />
                     </div>
                   </div>
 
@@ -159,9 +160,9 @@ const AssignmentList = ({ assignments = [], courses = [], onToggleComplete, onEd
                   </button>
                 </div>
 
-                {assignment.description && (
+{assignment.description_c && (
                   <p className="text-sm text-gray-500 mt-2">
-                    {assignment.description}
+                    {assignment.description_c}
                   </p>
                 )}
               </div>

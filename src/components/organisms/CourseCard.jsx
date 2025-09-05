@@ -11,10 +11,20 @@ const CourseCard = ({ course, onClick }) => {
     return "text-red-600 bg-red-100";
   };
 
-  const currentGrade = course.gradeCategories?.reduce((total, category) => {
-    const categoryAvg = category.grades?.reduce((sum, grade) => sum + grade.score, 0) / (category.grades?.length || 1);
-    return total + (categoryAvg * category.weight / 100);
-  }, 0) || 0;
+const currentGrade = (() => {
+    let gradeCategories = course.grade_categories_c;
+    if (typeof gradeCategories === 'string') {
+      try {
+        gradeCategories = JSON.parse(gradeCategories);
+      } catch (e) {
+        gradeCategories = [];
+      }
+    }
+    return gradeCategories?.reduce((total, category) => {
+      const categoryAvg = category.grades?.reduce((sum, grade) => sum + grade.score, 0) / (category.grades?.length || 1);
+      return total + (categoryAvg * category.weight / 100);
+    }, 0) || 0;
+  })();
 
   return (
     <Card 
@@ -25,14 +35,14 @@ const CourseCard = ({ course, onClick }) => {
         <div className="flex-1">
           <div className="flex items-center mb-2">
             <div 
-              className="w-3 h-8 rounded-full mr-3"
-              style={{ backgroundColor: course.color }}
+className="w-3 h-8 rounded-full mr-3"
+              style={{ backgroundColor: course.color_c }}
             />
             <div>
               <h3 className="font-semibold text-gray-900 font-display">
-                {course.code}
+                {course.code_c}
               </h3>
-              <p className="text-sm text-gray-600">{course.name}</p>
+              <p className="text-sm text-gray-600">{course.Name}</p>
             </div>
           </div>
         </div>
@@ -46,17 +56,17 @@ const CourseCard = ({ course, onClick }) => {
 
       <div className="space-y-2">
         <div className="flex items-center text-sm text-gray-600">
-          <ApperIcon name="User" className="w-4 h-4 mr-2" />
-          <span>{course.professor}</span>
+<ApperIcon name="User" className="w-4 h-4 mr-2" />
+          <span>{course.professor_c}</span>
         </div>
         
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center text-gray-600">
             <ApperIcon name="Calendar" className="w-4 h-4 mr-2" />
-            <span>{course.semester}</span>
+<span>{course.semester_c}</span>
           </div>
           <Badge variant="default" size="sm">
-            {course.credits} Credits
+            {course.credits_c} Credits
           </Badge>
         </div>
       </div>
@@ -69,9 +79,9 @@ const CourseCard = ({ course, onClick }) => {
         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
           <div 
             className="h-2 rounded-full transition-all duration-300"
-            style={{ 
+style={{ 
               width: `${Math.min(currentGrade, 100)}%`,
-              background: `linear-gradient(90deg, ${course.color}80, ${course.color})`
+              background: `linear-gradient(90deg, ${course.color_c}80, ${course.color_c})`
             }}
           />
         </div>

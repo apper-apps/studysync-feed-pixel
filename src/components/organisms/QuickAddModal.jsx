@@ -10,11 +10,11 @@ import { courseService } from "@/services/api/courseService";
 
 const QuickAddModal = ({ isOpen, onClose, courses = [] }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    courseId: "",
-    dueDate: "",
-    priority: "medium",
-    description: ""
+    title_c: "",
+    course_id_c: "",
+    due_date_c: "",
+    priority_c: "medium",
+    description_c: ""
   });
   const [loading, setLoading] = useState(false);
 
@@ -27,9 +27,9 @@ const QuickAddModal = ({ isOpen, onClose, courses = [] }) => {
 
     setLoading(true);
     try {
-      await assignmentService.create({
+await assignmentService.create({
         ...formData,
-        status: "todo"
+        status_c: "todo"
       });
       
       toast.success("Assignment added successfully!");
@@ -48,9 +48,9 @@ const QuickAddModal = ({ isOpen, onClose, courses = [] }) => {
     }
   };
 
-  const courseOptions = courses.map(course => ({
+const courseOptions = courses.map(course => ({
     value: course.Id.toString(),
-    label: `${course.code} - ${course.name}`
+    label: `${course.code_c} - ${course.Name}`
   }));
 
   const priorityOptions = [

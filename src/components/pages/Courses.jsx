@@ -23,12 +23,12 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const loadCourses = async () => {
-    try {
+try {
       setError("");
       setLoading(true);
       const data = await courseService.getAll();
-      setCourses(data);
-      setFilteredCourses(data);
+      setCourses(data || []);
+      setFilteredCourses(data || []);
     } catch (err) {
       setError("Failed to load courses");
     } finally {
@@ -42,16 +42,15 @@ const Courses = () => {
 
   useEffect(() => {
     let filtered = courses;
-    
-    if (selectedSemester !== "all") {
-      filtered = filtered.filter(course => course.semester === selectedSemester);
+if (selectedSemester !== "all") {
+      filtered = filtered.filter(course => course.semester_c === selectedSemester);
     }
     
     if (searchTerm) {
       filtered = filtered.filter(course => 
-        course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.professor.toLowerCase().includes(searchTerm.toLowerCase())
+        course.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.code_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.professor_c?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -82,7 +81,7 @@ const Courses = () => {
     return <Error error={error} onRetry={loadCourses} />;
   }
 
-  const semesters = [...new Set(courses.map(c => c.semester))];
+const semesters = [...new Set(courses.map(c => c.semester_c))];
   const semesterFilters = semesters.map(semester => ({
     value: semester,
     label: semester
@@ -124,7 +123,7 @@ const Courses = () => {
             className="input-field w-auto min-w-[150px]"
           >
             <option value="all">All Semesters</option>
-            {semesters.map(semester => (
+{semesters.map(semester => (
               <option key={semester} value={semester}>{semester}</option>
             ))}
           </select>
@@ -141,7 +140,7 @@ const Courses = () => {
         </Card>
         <Card className="text-center">
           <div className="text-2xl font-bold text-blue-600 mb-1">
-            {courses.reduce((sum, c) => sum + c.credits, 0)}
+            {courses.reduce((sum, c) => sum + (parseInt(c.credits_c) || 0), 0)}
           </div>
           <div className="text-sm text-gray-600">Total Credits</div>
         </Card>
@@ -194,13 +193,13 @@ const Courses = () => {
 };
 
 const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    code: "",
-    professor: "",
-    credits: "",
-    color: "#8B5CF6",
-    semester: "Fall 2024"
+const [formData, setFormData] = useState({
+    Name: "",
+    code_c: "",
+    professor_c: "",
+    credits_c: "",
+    color_c: "#8B5CF6",
+    semester_c: "Fall 2024"
   });
   const [loading, setLoading] = useState(false);
 
@@ -213,10 +212,10 @@ const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
 
     setLoading(true);
     try {
-      await onSubmit({
+await onSubmit({
         ...formData,
-        credits: parseInt(formData.credits) || 3,
-        gradeCategories: []
+        credits_c: parseInt(formData.credits_c) || 3,
+        grade_categories_c: ""
       });
       setFormData({
         name: "",
@@ -267,10 +266,10 @@ const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <Input
+<Input
               label="Course Name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              value={formData.Name}
+              onChange={(e) => setFormData(prev => ({ ...prev, Name: e.target.value }))}
               placeholder="Introduction to Computer Science"
               required
             />
@@ -278,8 +277,8 @@ const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="Course Code"
-                value={formData.code}
-                onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
+                value={formData.code_c}
+                onChange={(e) => setFormData(prev => ({ ...prev, code_c: e.target.value }))}
                 placeholder="CS101"
                 required
               />
@@ -287,8 +286,8 @@ const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
               <Input
                 label="Credits"
                 type="number"
-                value={formData.credits}
-                onChange={(e) => setFormData(prev => ({ ...prev, credits: e.target.value }))}
+                value={formData.credits_c}
+                onChange={(e) => setFormData(prev => ({ ...prev, credits_c: e.target.value }))}
                 placeholder="3"
                 min="1"
                 max="6"

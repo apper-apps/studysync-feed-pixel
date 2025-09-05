@@ -6,13 +6,31 @@ import Input from "@/components/atoms/Input";
 import Card from "@/components/atoms/Card";
 
 const GradeCalculator = ({ course, onUpdateGrades }) => {
-  const [categories, setCategories] = useState(course?.gradeCategories || []);
+const [categories, setCategories] = useState(() => {
+    let gradeCategories = course?.grade_categories_c || [];
+    if (typeof gradeCategories === 'string') {
+      try {
+        gradeCategories = JSON.parse(gradeCategories);
+      } catch (e) {
+        gradeCategories = [];
+      }
+    }
+    return gradeCategories;
+  });
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryWeight, setNewCategoryWeight] = useState("");
 
-  useEffect(() => {
-    if (course?.gradeCategories) {
-      setCategories(course.gradeCategories);
+useEffect(() => {
+    if (course?.grade_categories_c) {
+      let gradeCategories = course.grade_categories_c;
+      if (typeof gradeCategories === 'string') {
+        try {
+          gradeCategories = JSON.parse(gradeCategories);
+        } catch (e) {
+          gradeCategories = [];
+        }
+      }
+      setCategories(gradeCategories);
     }
   }, [course]);
 

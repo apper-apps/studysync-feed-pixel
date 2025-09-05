@@ -19,7 +19,7 @@ const Schedule = () => {
   const [error, setError] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const loadData = async () => {
+const loadData = async () => {
     try {
       setError("");
       setLoading(true);
@@ -27,8 +27,8 @@ const Schedule = () => {
         scheduleService.getAll(),
         courseService.getAll()
       ]);
-      setSchedules(schedulesData);
-      setCourses(coursesData);
+      setSchedules(schedulesData || []);
+      setCourses(coursesData || []);
     } catch (err) {
       setError("Failed to load schedule data");
     } finally {
@@ -43,9 +43,11 @@ const Schedule = () => {
   const handleAddSchedule = async (scheduleData) => {
     try {
       const newSchedule = await scheduleService.create(scheduleData);
-      setSchedules(prev => [...prev, newSchedule]);
-      setShowAddModal(false);
-      toast.success("Class time added successfully!");
+      if (newSchedule) {
+        setSchedules(prev => [...prev, newSchedule]);
+        setShowAddModal(false);
+        toast.success("Class time added successfully!");
+      }
     } catch (err) {
       toast.error("Failed to add class time");
     }
@@ -59,12 +61,11 @@ const Schedule = () => {
     return <Error error={error} onRetry={loadData} />;
   }
 
-  const totalHours = schedules.reduce((total, schedule) => {
-    const start = parseInt(schedule.startTime.split(":")[0]);
-    const end = parseInt(schedule.endTime.split(":")[0]);
+const totalHours = schedules.reduce((total, schedule) => {
+    const start = parseInt(schedule.start_time_c?.split(":")[0] || "0");
+    const end = parseInt(schedule.end_time_c?.split(":")[0] || "0");
     return total + (end - start);
   }, 0);
-
   const daysWithClasses = [...new Set(schedules.map(s => s.dayOfWeek))].length;
 
   return (
@@ -145,11 +146,11 @@ const TodayClasses = ({ schedules, courses }) => {
   const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const todayName = days[today.getDay()];
   
-  const todaySchedules = schedules
-    .filter(schedule => schedule.dayOfWeek.toLowerCase() === todayName)
+const todaySchedules = schedules
+    .filter(schedule => schedule.day_of_week_c?.toLowerCase() === todayName)
     .sort((a, b) => {
-      const aTime = parseInt(a.startTime.replace(":", ""));
-      const bTime = parseInt(b.startTime.replace(":", ""));
+      const aTime = parseInt(a.start_time_c?.replace(":", "") || "0");
+      const bTime = parseInt(b.start_time_c?.replace(":", "") || "0");
       return aTime - bTime;
     });
 
@@ -174,29 +175,30 @@ const TodayClasses = ({ schedules, courses }) => {
         Today's Classes ({todaySchedules.length})
       </h2>
       <div className="space-y-3">
-        {todaySchedules.map((schedule) => {
-          const course = courses.find(c => c.Id.toString() === schedule.courseId.toString());
+{todaySchedules.map((schedule) => {
+          const courseId = schedule.course_id_c?.Id || schedule.course_id_c;
+          const course = courses.find(c => c.Id.toString() === courseId.toString());
           return (
             <div key={schedule.Id} className="flex items-center p-4 bg-gray-50 rounded-lg">
               <div 
                 className="w-3 h-16 rounded-full mr-4"
-                style={{ backgroundColor: course?.color || "#6B7280" }}
+                style={{ backgroundColor: course?.color_c || "#6B7280" }}
               />
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-900">
-                  {course?.code || "Unknown Course"}
+                  {course?.code_c || "Unknown Course"}
                 </h3>
-                <p className="text-gray-600">{course?.name}</p>
+                <p className="text-gray-600">{course?.Name}</p>
                 <p className="text-sm text-gray-500 mt-1">
-                  👨‍🏫 {course?.professor} • 📍 {schedule.location}
+                  👨‍🏫 {course?.professor_c} • 📍 {schedule.location_c}
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold text-gray-900">
-                  {schedule.startTime} - {schedule.endTime}
+                  {schedule.start_time_c} - {schedule.end_time_c}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {parseInt(schedule.endTime.split(":")[0]) - parseInt(schedule.startTime.split(":")[0])} hour{parseInt(schedule.endTime.split(":")[0]) - parseInt(schedule.startTime.split(":")[0]) > 1 ? 's' : ''}
+                  {parseInt(schedule.end_time_c?.split(":")[0] || "0") - parseInt(schedule.start_time_c?.split(":")[0] || "0")} hour{parseInt(schedule.end_time_c?.split(":")[0] || "0") - parseInt(schedule.start_time_c?.split(":")[0] || "0") > 1 ? 's' : ''}
                 </div>
               </div>
             </div>
@@ -209,11 +211,11 @@ const TodayClasses = ({ schedules, courses }) => {
 
 const AddScheduleModal = ({ isOpen, onClose, onSubmit, courses }) => {
   const [formData, setFormData] = useState({
-    courseId: "",
-    dayOfWeek: "",
-    startTime: "",
-    endTime: "",
-    location: ""
+    course_id_c: "",
+    day_of_week_c: "",
+    start_time_c: "",
+    end_time_c: "",
+    location_c: ""
   });
   const [loading, setLoading] = useState(false);
 
@@ -248,9 +250,9 @@ const AddScheduleModal = ({ isOpen, onClose, onSubmit, courses }) => {
 
   if (!isOpen) return null;
 
-  const courseOptions = courses.map(course => ({
+const courseOptions = courses.map(course => ({
     value: course.Id.toString(),
-    label: `${course.code} - ${course.name}`
+    label: `${course.code_c} - ${course.Name}`
   }));
 
   const dayOptions = [
@@ -287,36 +289,35 @@ const AddScheduleModal = ({ isOpen, onClose, onSubmit, courses }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <Select
+<Select
               label="Course"
-              value={formData.courseId}
-              onChange={(e) => setFormData(prev => ({ ...prev, courseId: e.target.value }))}
+              value={formData.course_id_c}
+              onChange={(e) => setFormData(prev => ({ ...prev, course_id_c: e.target.value }))}
               options={courseOptions}
               required
             />
 
             <Select
-              label="Day of Week"
-              value={formData.dayOfWeek}
-              onChange={(e) => setFormData(prev => ({ ...prev, dayOfWeek: e.target.value }))}
+label="Day of Week"
+              value={formData.day_of_week_c}
+              onChange={(e) => setFormData(prev => ({ ...prev, day_of_week_c: e.target.value }))}
               options={dayOptions}
               required
             />
-
             <div className="grid grid-cols-2 gap-4">
               <Input
-                label="Start Time"
+label="Start Time"
                 type="time"
-                value={formData.startTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                value={formData.start_time_c}
+                onChange={(e) => setFormData(prev => ({ ...prev, start_time_c: e.target.value }))}
                 required
               />
 
               <Input
                 label="End Time"
                 type="time"
-                value={formData.endTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                value={formData.end_time_c}
+                onChange={(e) => setFormData(prev => ({ ...prev, end_time_c: e.target.value }))}
                 required
               />
             </div>

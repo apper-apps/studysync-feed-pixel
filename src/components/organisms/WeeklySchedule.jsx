@@ -18,32 +18,33 @@ const WeeklySchedule = ({ schedules = [], courses = [] }) => {
     { key: "sunday", label: "Sun" }
   ];
 
-  const getCourse = (courseId) => {
-    return courses.find(c => c.Id.toString() === courseId.toString());
+const getCourse = (courseId) => {
+    const actualCourseId = courseId?.Id || courseId;
+    return courses.find(c => c.Id.toString() === actualCourseId.toString());
   };
 
   const getScheduleForTimeAndDay = (time, day) => {
-    return schedules.find(schedule => {
-      const startHour = parseInt(schedule.startTime.split(":")[0]);
+return schedules.find(schedule => {
+      const startHour = parseInt(schedule.start_time_c?.split(":")[0] || "0");
       const timeHour = parseInt(time.split(":")[0]);
-      const endHour = parseInt(schedule.endTime.split(":")[0]);
+      const endHour = parseInt(schedule.end_time_c?.split(":")[0] || "0");
       
-      return schedule.dayOfWeek.toLowerCase() === day && 
+      return schedule.day_of_week_c?.toLowerCase() === day && 
              timeHour >= startHour && 
              timeHour < endHour;
     });
   };
 
-  const getScheduleDuration = (schedule) => {
-    const startHour = parseInt(schedule.startTime.split(":")[0]);
-    const endHour = parseInt(schedule.endTime.split(":")[0]);
+const getScheduleDuration = (schedule) => {
+    const startHour = parseInt(schedule.start_time_c?.split(":")[0] || "0");
+    const endHour = parseInt(schedule.end_time_c?.split(":")[0] || "0");
     return endHour - startHour;
   };
 
-  const isScheduleStart = (schedule, time, day) => {
-    const startHour = parseInt(schedule.startTime.split(":")[0]);
+const isScheduleStart = (schedule, time, day) => {
+    const startHour = parseInt(schedule.start_time_c?.split(":")[0] || "0");
     const timeHour = parseInt(time.split(":")[0]);
-    return schedule.dayOfWeek.toLowerCase() === day && timeHour === startHour;
+    return schedule.day_of_week_c?.toLowerCase() === day && timeHour === startHour;
   };
 
   return (
@@ -69,9 +70,9 @@ const WeeklySchedule = ({ schedules = [], courses = [] }) => {
                 <span className="text-sm text-gray-600">{time}</span>
               </div>
               
-              {days.map((day) => {
+{days.map((day) => {
                 const schedule = getScheduleForTimeAndDay(time, day.key);
-                const course = schedule ? getCourse(schedule.courseId) : null;
+                const course = schedule ? getCourse(schedule.course_id_c) : null;
                 const isStart = schedule ? isScheduleStart(schedule, time, day.key) : false;
                 const duration = schedule ? getScheduleDuration(schedule) : 1;
                 
@@ -90,18 +91,18 @@ const WeeklySchedule = ({ schedules = [], courses = [] }) => {
                       <div 
                         className="absolute inset-1 rounded-lg p-3 text-white text-sm overflow-hidden"
                         style={{ 
-                          backgroundColor: course.color,
+backgroundColor: course.color_c,
                           height: `${duration * 64 - 8}px`
                         }}
                       >
-                        <div className="font-semibold">{course.code}</div>
-                        <div className="text-xs opacity-90 mt-1">{course.name}</div>
+                        <div className="font-semibold">{course.code_c}</div>
+                        <div className="text-xs opacity-90 mt-1">{course.Name}</div>
                         <div className="text-xs opacity-75 mt-2">
-                          {schedule.startTime} - {schedule.endTime}
+                          {schedule.start_time_c} - {schedule.end_time_c}
                         </div>
-                        {schedule.location && (
+                        {schedule.location_c && (
                           <div className="text-xs opacity-75">
-                            📍 {schedule.location}
+                            📍 {schedule.location_c}
                           </div>
                         )}
                       </div>

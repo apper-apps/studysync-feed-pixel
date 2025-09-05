@@ -22,16 +22,16 @@ const Assignments = () => {
   const [selectedCourse, setSelectedCourse] = useState("all");
 
   const loadData = async () => {
-    try {
+try {
       setError("");
       setLoading(true);
       const [assignmentsData, coursesData] = await Promise.all([
         assignmentService.getAll(),
         courseService.getAll()
       ]);
-      setAssignments(assignmentsData);
-      setCourses(coursesData);
-      setFilteredAssignments(assignmentsData);
+      setAssignments(assignmentsData || []);
+      setCourses(coursesData || []);
+      setFilteredAssignments(assignmentsData || []);
     } catch (err) {
       setError("Failed to load assignments");
     } finally {
@@ -43,19 +43,20 @@ const Assignments = () => {
     loadData();
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     let filtered = assignments;
     
     if (selectedCourse !== "all") {
-      filtered = filtered.filter(assignment => 
-        assignment.courseId.toString() === selectedCourse.toString()
-      );
+      filtered = filtered.filter(assignment => {
+        const courseId = assignment.course_id_c?.Id || assignment.course_id_c;
+        return courseId && courseId.toString() === selectedCourse.toString();
+      });
     }
     
     if (searchTerm) {
       filtered = filtered.filter(assignment => 
-        assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assignment.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        assignment.title_c?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignment.description_c?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -93,15 +94,15 @@ const Assignments = () => {
     return <Error error={error} onRetry={loadData} />;
   }
 
-  const courseFilters = courses.map(course => ({
+const courseFilters = courses.map(course => ({
     value: course.Id.toString(),
-    label: `${course.code} - ${course.name}`
+    label: `${course.code_c} - ${course.Name}`
   }));
 
   // Calculate statistics
-  const totalAssignments = assignments.length;
-  const completedCount = assignments.filter(a => a.status === "completed").length;
-  const todoCount = assignments.filter(a => a.status === "todo").length;
+const totalAssignments = assignments.length;
+  const completedCount = assignments.filter(a => a.status_c === "completed").length;
+  const todoCount = assignments.filter(a => a.status_c === "todo").length;
   const completionRate = totalAssignments > 0 ? Math.round((completedCount / totalAssignments) * 100) : 0;
 
   return (

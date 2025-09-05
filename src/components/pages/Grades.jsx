@@ -15,13 +15,13 @@ const Grades = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadCourses = async () => {
+const loadCourses = async () => {
     try {
       setError("");
       setLoading(true);
       const data = await courseService.getAll();
-      setCourses(data);
-      if (data.length > 0 && !selectedCourse) {
+      setCourses(data || []);
+      if (data && data.length > 0 && !selectedCourse) {
         setSelectedCourse(data[0]);
       }
     } catch (err) {
@@ -35,10 +35,18 @@ const Grades = () => {
     loadCourses();
   }, []);
 
-  const calculateCourseGrade = (course) => {
-    if (!course.gradeCategories || course.gradeCategories.length === 0) return 0;
+const calculateCourseGrade = (course) => {
+    let gradeCategories = course.grade_categories_c;
+    if (typeof gradeCategories === 'string') {
+      try {
+        gradeCategories = JSON.parse(gradeCategories);
+      } catch (e) {
+        gradeCategories = [];
+      }
+    }
+    if (!gradeCategories || gradeCategories.length === 0) return 0;
     
-    const weightedSum = course.gradeCategories.reduce((sum, category) => {
+    const weightedSum = gradeCategories.reduce((sum, category) => {
       if (!category.grades || category.grades.length === 0) return sum;
       const categoryAvg = category.grades.reduce((total, grade) => total + grade.score, 0) / category.grades.length;
       return sum + (categoryAvg * category.weight / 100);
@@ -55,7 +63,7 @@ const Grades = () => {
     return { letter: 'F', color: 'text-red-600', bg: 'bg-red-100' };
   };
 
-  const calculateOverallGPA = () => {
+const calculateOverallGPA = () => {
     if (courses.length === 0) return 0;
     
     const totalGradePoints = courses.reduce((sum, course) => {
@@ -67,24 +75,26 @@ const Grades = () => {
       else if (grade >= 60) points = 1.0;
       else points = 0.0;
       
-      return sum + (points * course.credits);
+      return sum + (points * parseInt(course.credits_c || 0));
     }, 0);
     
-    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
+    const totalCredits = courses.reduce((sum, course) => sum + parseInt(course.credits_c || 0), 0);
     return totalCredits > 0 ? totalGradePoints / totalCredits : 0;
   };
 
-  const handleUpdateGrades = async (gradeCategories) => {
+const handleUpdateGrades = async (gradeCategories) => {
     if (!selectedCourse) return;
     
     try {
       const updatedCourse = await courseService.updateGrades(selectedCourse.Id, gradeCategories);
-      setCourses(prev => 
-        prev.map(course => 
-          course.Id === selectedCourse.Id ? updatedCourse : course
-        )
-      );
-      setSelectedCourse(updatedCourse);
+      if (updatedCourse) {
+        setCourses(prev => 
+          prev.map(course => 
+            course.Id === selectedCourse.Id ? updatedCourse : course
+          )
+        );
+        setSelectedCourse(updatedCourse);
+      }
     } catch (err) {
       toast.error("Failed to update grades");
     }
@@ -111,7 +121,7 @@ const Grades = () => {
   }
 
   const overallGPA = calculateOverallGPA();
-  const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
+const totalCredits = courses.reduce((sum, course) => sum + parseInt(course.credits_c || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -153,7 +163,7 @@ const Grades = () => {
         </Card>
         
         <Card className="text-center">
-          <div className="text-2xl font-bold text-green-600 mb-2">
+<div className="text-2xl font-bold text-green-600 mb-2">
             {Math.round(courses.reduce((sum, course) => sum + calculateCourseGrade(course), 0) / courses.length) || 0}%
           </div>
           <div className="text-sm text-gray-600">Average Score</div>
@@ -185,14 +195,14 @@ const Grades = () => {
                     <div className="flex items-center space-x-3">
                       <div 
                         className="w-3 h-10 rounded-full"
-                        style={{ backgroundColor: course.color }}
+                        style={{ backgroundColor: course.color_c }}
                       />
                       <div>
                         <h3 className="font-medium text-gray-900">
-                          {course.code}
+                          {course.code_c}
                         </h3>
                         <p className="text-sm text-gray-600 truncate max-w-[150px]">
-                          {course.name}
+                          {course.Name}
                         </p>
                       </div>
                     </div>
@@ -202,7 +212,7 @@ const Grades = () => {
                         {grade.toFixed(1)}% ({gradeInfo.letter})
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {course.credits} credits
+                        {course.credits_c} credits
                       </div>
                     </div>
                   </div>
@@ -219,15 +229,15 @@ const Grades = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 font-display">
-                    {selectedCourse.code} - Grade Calculator
+{selectedCourse.code_c} - Grade Calculator
                   </h2>
                   <p className="text-sm text-gray-600">
-                    {selectedCourse.name} • {selectedCourse.professor}
+                    {selectedCourse.Name} • {selectedCourse.professor_c}
                   </p>
                 </div>
                 <div 
                   className="w-4 h-12 rounded-full"
-                  style={{ backgroundColor: selectedCourse.color }}
+                  style={{ backgroundColor: selectedCourse.color_c }}
                 />
               </div>
               

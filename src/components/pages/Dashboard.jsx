@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { format, isToday, isTomorrow, isPast } from "date-fns";
-import ApperIcon from "@/components/ApperIcon";
-import StatCard from "@/components/molecules/StatCard";
-import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
+import { format, isPast, isToday, isTomorrow } from "date-fns";
 import { courseService } from "@/services/api/courseService";
 import { assignmentService } from "@/services/api/assignmentService";
 import { scheduleService } from "@/services/api/scheduleService";
+import ApperIcon from "@/components/ApperIcon";
+import StatCard from "@/components/molecules/StatCard";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import Grades from "@/components/pages/Grades";
+import Schedule from "@/components/pages/Schedule";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadDashboardData = async () => {
+const loadDashboardData = async () => {
     try {
       setError("");
       setLoading(true);
@@ -33,10 +35,10 @@ const Dashboard = () => {
         assignmentService.getUpcoming(7)
       ]);
 
-      setCourses(coursesData);
-      setAssignments(assignmentsData);
-      setTodaySchedule(scheduleData);
-      setUpcomingAssignments(upcomingData);
+      setCourses(coursesData || []);
+      setAssignments(assignmentsData || []);
+      setTodaySchedule(scheduleData || []);
+      setUpcomingAssignments(upcomingData || []);
     } catch (err) {
       setError("Failed to load dashboard data");
     } finally {
@@ -57,30 +59,37 @@ const Dashboard = () => {
   }
 
   // Calculate statistics
-  const totalAssignments = assignments.length;
-  const completedAssignments = assignments.filter(a => a.status === "completed").length;
-  const pendingAssignments = assignments.filter(a => a.status === "todo").length;
-  const overdueAssignments = assignments.filter(a => a.status === "todo" && isPast(new Date(a.dueDate))).length;
+const totalAssignments = assignments.length;
+  const completedAssignments = assignments.filter(a => a.status_c === "completed").length;
+  const pendingAssignments = assignments.filter(a => a.status_c === "todo").length;
+  const overdueAssignments = assignments.filter(a => a.status_c === "todo" && isPast(new Date(a.due_date_c))).length;
 
   // Calculate overall GPA
-  const overallGPA = courses.reduce((total, course) => {
-    const courseGrade = course.gradeCategories?.reduce((sum, category) => {
+const overallGPA = courses.reduce((total, course) => {
+    let gradeCategories = course.grade_categories_c;
+    if (typeof gradeCategories === 'string') {
+      try {
+        gradeCategories = JSON.parse(gradeCategories);
+      } catch (e) {
+        gradeCategories = [];
+      }
+    }
+    const courseGrade = gradeCategories?.reduce((sum, category) => {
       const categoryAvg = category.grades?.reduce((gradeSum, grade) => gradeSum + grade.score, 0) / (category.grades?.length || 1);
       return sum + (categoryAvg * category.weight / 100);
     }, 0) || 0;
     return total + courseGrade;
   }, 0) / courses.length || 0;
-
-  const getCourseName = (courseId) => {
+const getCourseName = (assignment) => {
+    const courseId = assignment.course_id_c?.Id || assignment.course_id_c;
     const course = courses.find(c => c.Id.toString() === courseId.toString());
-    return course ? course.code : "Unknown";
+    return course ? course.code_c : "Unknown";
   };
-
-  const getCourseColor = (courseId) => {
+  const getCourseColor = (assignment) => {
+    const courseId = assignment.course_id_c?.Id || assignment.course_id_c;
     const course = courses.find(c => c.Id.toString() === courseId.toString());
-    return course?.color || "#6B7280";
+    return course?.color_c || "#6B7280";
   };
-
   const getDueDateLabel = (dueDate) => {
     const date = new Date(dueDate);
     if (isToday(date)) return "Today";
@@ -164,25 +173,26 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {todaySchedule.slice(0, 4).map((schedule) => {
-                const course = courses.find(c => c.Id.toString() === schedule.courseId.toString());
+{todaySchedule.slice(0, 4).map((schedule) => {
+                const courseId = schedule.course_id_c?.Id || schedule.course_id_c;
+                const course = courses.find(c => c.Id.toString() === courseId.toString());
                 return (
                   <div key={schedule.Id} className="flex items-center p-3 bg-gray-50 rounded-lg">
                     <div 
                       className="w-3 h-12 rounded-full mr-3"
-                      style={{ backgroundColor: course?.color || "#6B7280" }}
+                      style={{ backgroundColor: course?.color_c || "#6B7280" }}
                     />
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-900">
-                        {course?.code || "Unknown Course"}
+                        {course?.code_c || "Unknown Course"}
                       </h3>
-                      <p className="text-sm text-gray-600">{course?.name}</p>
+                      <p className="text-sm text-gray-600">{course?.Name}</p>
                       <p className="text-xs text-gray-500">
-                        📍 {schedule.location}
+                        📍 {schedule.location_c}
                       </p>
                     </div>
                     <div className="text-right text-sm text-gray-600">
-                      <div className="font-medium">{schedule.startTime} - {schedule.endTime}</div>
+                      <div className="font-medium">{schedule.start_time_c} - {schedule.end_time_c}</div>
                     </div>
                   </div>
                 );
@@ -215,24 +225,24 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {upcomingAssignments.slice(0, 5).map((assignment) => (
+{upcomingAssignments.slice(0, 5).map((assignment) => (
                 <div key={assignment.Id} className="flex items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                   <div className="flex items-center space-x-3 flex-1">
                     <div 
                       className="w-2 h-8 rounded-full"
-                      style={{ backgroundColor: getCourseColor(assignment.courseId) }}
+                      style={{ backgroundColor: getCourseColor(assignment) }}
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 truncate">
-                        {assignment.title}
+                        {assignment.title_c}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {getCourseName(assignment.courseId)}
+                        {getCourseName(assignment)}
                       </p>
                     </div>
                   </div>
-                  <div className={`text-sm font-medium ${getDueDateColor(assignment.dueDate)}`}>
-                    {getDueDateLabel(assignment.dueDate)}
+                  <div className={`text-sm font-medium ${getDueDateColor(assignment.due_date_c)}`}>
+                    {getDueDateLabel(assignment.due_date_c)}
                   </div>
                 </div>
               ))}
