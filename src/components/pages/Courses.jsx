@@ -194,7 +194,7 @@ const semesters = [...new Set(courses.map(c => c.semester_c))];
 
 const AddCourseModal = ({ isOpen, onClose, onSubmit }) => {
 const [formData, setFormData] = useState({
-    Name: "",
+Name: "",
     code_c: "",
     professor_c: "",
     credits_c: "",
@@ -205,7 +205,7 @@ const [formData, setFormData] = useState({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.code.trim() || !formData.professor.trim()) {
+if (!formData.Name.trim() || !formData.code_c.trim() || !formData.professor_c.trim()) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -217,13 +217,13 @@ await onSubmit({
         credits_c: parseInt(formData.credits_c) || 3,
         grade_categories_c: ""
       });
-      setFormData({
-        name: "",
-        code: "",
-        professor: "",
-        credits: "",
-        color: "#8B5CF6",
-        semester: "Fall 2024"
+setFormData({
+        Name: "",
+        code_c: "",
+        professor_c: "",
+        credits_c: "",
+        color_c: "#8B5CF6",
+        semester_c: "Fall 2024"
       });
     } catch (error) {
       toast.error("Failed to add course");
@@ -295,24 +295,24 @@ await onSubmit({
               />
             </div>
 
-            <Input
+<Input
               label="Professor"
-              value={formData.professor}
-              onChange={(e) => setFormData(prev => ({ ...prev, professor: e.target.value }))}
+              value={formData.professor_c}
+              onChange={(e) => setFormData(prev => ({ ...prev, professor_c: e.target.value }))}
               placeholder="Dr. Smith"
               required
             />
 
             <Select
-              label="Semester"
-              value={formData.semester}
-              onChange={(e) => setFormData(prev => ({ ...prev, semester: e.target.value }))}
+label="Semester"
+              value={formData.semester_c}
+              onChange={(e) => setFormData(prev => ({ ...prev, semester_c: e.target.value }))}
               options={semesterOptions}
             />
 
-            <CourseColorPicker
-              selectedColor={formData.color}
-              onColorChange={(color) => setFormData(prev => ({ ...prev, color }))}
+<CourseColorPicker
+              selectedColor={formData.color_c}
+              onColorChange={(color) => setFormData(prev => ({ ...prev, color_c: color }))}
             />
 
             <div className="flex justify-end space-x-3 pt-4">
