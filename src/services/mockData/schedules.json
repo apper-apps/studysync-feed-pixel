@@ -1,0 +1,114 @@
+[
+  {
+    "Id": 1,
+    "courseId": "1",
+    "dayOfWeek": "monday",
+    "startTime": "9:00",
+    "endTime": "10:30",
+    "location": "Computer Lab A"
+  },
+  {
+    "Id": 2,
+    "courseId": "1",
+    "dayOfWeek": "wednesday",
+    "startTime": "9:00",
+    "endTime": "10:30",
+    "location": "Computer Lab A"
+  },
+  {
+    "Id": 3,
+    "courseId": "1",
+    "dayOfWeek": "friday",
+    "startTime": "9:00",
+    "endTime": "10:30",
+    "location": "Computer Lab A"
+  },
+  {
+    "Id": 4,
+    "courseId": "2",
+    "dayOfWeek": "tuesday",
+    "startTime": "11:00",
+    "endTime": "12:30",
+    "location": "Math Building 205"
+  },
+  {
+    "Id": 5,
+    "courseId": "2",
+    "dayOfWeek": "thursday",
+    "startTime": "11:00",
+    "endTime": "12:30",
+    "location": "Math Building 205"
+  },
+  {
+    "Id": 6,
+    "courseId": "3",
+    "dayOfWeek": "monday",
+    "startTime": "14:00",
+    "endTime": "15:30",
+    "location": "Liberal Arts 108"
+  },
+  {
+    "Id": 7,
+    "courseId": "3",
+    "dayOfWeek": "wednesday",
+    "startTime": "14:00",
+    "endTime": "15:30",
+    "location": "Liberal Arts 108"
+  },
+  {
+    "Id": 8,
+    "courseId": "4",
+    "dayOfWeek": "monday",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "location": "Science Building 301"
+  },
+  {
+    "Id": 9,
+    "courseId": "4",
+    "dayOfWeek": "wednesday",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "location": "Science Building 301"
+  },
+  {
+    "Id": 10,
+    "courseId": "4",
+    "dayOfWeek": "friday",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "location": "Physics Lab"
+  },
+  {
+    "Id": 11,
+    "courseId": "5",
+    "dayOfWeek": "tuesday",
+    "startTime": "13:00",
+    "endTime": "14:30",
+    "location": "History Hall 102"
+  },
+  {
+    "Id": 12,
+    "courseId": "5",
+    "dayOfWeek": "thursday",
+    "startTime": "13:00",
+    "endTime": "14:30",
+    "location": "History Hall 102"
+  },
+  {
+    "Id": 13,
+    "courseId": "6",
+    "dayOfWeek": "tuesday",
+    "startTime": "15:00",
+    "endTime": "16:30",
+    "location": "Computer Lab B"
+  },
+  {
+    "Id": 14,
+    "courseId": "6",
+    "dayOfWeek": "thursday",
+    "startTime": "15:00",
+    "endTime": "16:30",
+    "location": "Computer Lab B"
+  }
+]

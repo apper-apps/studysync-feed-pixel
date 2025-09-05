@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 1,
+    "title": "Programming Lab 4: Recursion",
+    "courseId": "1",
+    "dueDate": "2024-01-25",
+    "priority": "high",
+    "status": "todo",
+    "description": "Implement recursive algorithms for factorial, fibonacci, and tree traversal",
+    "grade": null
+  },
+  {
+    "Id": 2,
+    "title": "Calculus Problem Set 7-9",
+    "courseId": "2",
+    "dueDate": "2024-01-23",
+    "priority": "medium",
+    "status": "todo",
+    "description": "Integration problems covering u-substitution and integration by parts",
+    "grade": null
+  },
+  {
+    "Id": 3,
+    "title": "Research Paper Final Draft",
+    "courseId": "3",
+    "dueDate": "2024-01-28",
+    "priority": "high",
+    "status": "todo",
+    "description": "Submit final draft of research paper with proper citations and formatting",
+    "grade": null
+  },
+  {
+    "Id": 4,
+    "title": "Physics Lab Report: Momentum",
+    "courseId": "4",
+    "dueDate": "2024-01-26",
+    "priority": "medium",
+    "status": "todo",
+    "description": "Complete lab report analyzing conservation of momentum experiments",
+    "grade": null
+  },
+  {
+    "Id": 5,
+    "title": "History Essay: Renaissance Impact",
+    "courseId": "5",
+    "dueDate": "2024-01-30",
+    "priority": "medium",
+    "status": "todo",
+    "description": "5-page essay analyzing the impact of the Renaissance on European society",
+    "grade": null
+  },
+  {
+    "Id": 6,
+    "title": "Data Structures Project 3",
+    "courseId": "6",
+    "dueDate": "2024-02-02",
+    "priority": "high",
+    "status": "todo",
+    "description": "Implement hash table with collision resolution using chaining",
+    "grade": null
+  },
+  {
+    "Id": 7,
+    "title": "CS101 Final Project Proposal",
+    "courseId": "1",
+    "dueDate": "2024-01-22",
+    "priority": "low",
+    "status": "completed",
+    "description": "Submit proposal for final programming project",
+    "grade": 95
+  },
+  {
+    "Id": 8,
+    "title": "Calculus Quiz 5",
+    "courseId": "2",
+    "dueDate": "2024-01-21",
+    "priority": "low",
+    "status": "completed",
+    "description": "Quiz covering derivatives and applications",
+    "grade": 88
+  },
+  {
+    "Id": 9,
+    "title": "English Discussion Post",
+    "courseId": "3",
+    "dueDate": "2024-01-20",
+    "priority": "low",
+    "status": "completed",
+    "description": "Respond to discussion prompt about narrative structure",
+    "grade": 92
+  },
+  {
+    "Id": 10,
+    "title": "Physics Problem Set 5",
+    "courseId": "4",
+    "dueDate": "2024-01-19",
+    "priority": "medium",
+    "status": "completed",
+    "description": "Problems on work, energy, and power",
+    "grade": 81
+  },
+  {
+    "Id": 11,
+    "title": "History Reading Quiz",
+    "courseId": "5",
+    "dueDate": "2024-01-24",
+    "priority": "low",
+    "status": "todo",
+    "description": "Quiz on assigned readings about Medieval Europe",
+    "grade": null
+  },
+  {
+    "Id": 12,
+    "title": "Algorithm Analysis Assignment",
+    "courseId": "6",
+    "dueDate": "2024-01-27",
+    "priority": "medium",
+    "status": "todo",
+    "description": "Analyze time complexity of sorting algorithms",
+    "grade": null
+  }
+]
